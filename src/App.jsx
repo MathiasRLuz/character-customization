@@ -8,7 +8,7 @@ import { proxy, useSnapshot } from "valtio";
 import { useCustomization } from "./contexts/Customization";
 
 function App() {
-  const { color, setColor, material } = useCustomization();
+  const { color, setColor, material, meshName } = useCustomization();
   const state = proxy({
     current: "color",
     items: {
@@ -30,7 +30,8 @@ function App() {
           onChange={(color) => (state.items[snap.current] = color)}
           onMouseUp={() => handleColorChange(state.items[snap.current])}
         />
-        <h1>{color}</h1>
+        <h3>{color}</h3>        
+        <h1>{meshName}</h1>
       </div>
     );
   }

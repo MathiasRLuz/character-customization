@@ -14,6 +14,7 @@ export const CustomizationProvider = (props) => {
   const [totalLegs, setTotalLegs] = useState(0);
   const [color, setColor] = useState("#fff");
   const [material, setMaterial] = useState(null);
+  const [meshName, setMeshName] = useState("");
 
   return (
     <CustomizationContext.Provider
@@ -42,6 +43,8 @@ export const CustomizationProvider = (props) => {
         setColor,
         material,
         setMaterial,
+        meshName,
+        setMeshName,
       }}
     >
       {props.children}

@@ -6,8 +6,10 @@ Command: npx gltfjsx@6.1.4 public/models/man.glb
 import React, { useEffect, useRef, useState } from "react";
 import { useGLTF, useAnimations, OrbitControls } from "@react-three/drei";
 import { useCustomization } from "../contexts/Customization";
-
+import { useFrame, useThree } from "@react-three/fiber";
+import * as THREE from "three";
 export const Man = (props) => {
+  const { camera } = useThree();
   const { nodes, materials, animations } = useGLTF("./models/man.glb");
   const { ref, actions, names } = useAnimations(animations);
   const {
@@ -23,6 +25,7 @@ export const Man = (props) => {
     setTotalLegs,
     setColor,
     setMaterial,
+    setMeshName
   } = useCustomization();
   setTotalAnimations(names.length);
   setTotalBody(9);
@@ -37,13 +40,69 @@ export const Man = (props) => {
     return () => actions[names[animationIndex]].fadeOut(0.5);
   }, [animationIndex, actions, names]);
 
-  function handlePointerDown(event) {
-    setMaterial(event.object.material)
-    console.log(event.object.material)
+  function rgbToHex(color) {
+    const r = Math.ceil(color.r * 255);
+    const g = Math.ceil(color.g * 255);
+    const b = Math.ceil(color.b * 255);
+    const hex = ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    return "#" + hex;
+  }
+
+  function handleClick(event) {
+    // Prevent event bubbling
+    event.stopPropagation();
+
+    // Get the NDC of the mouse position
+    const mouse = new THREE.Vector3();
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    mouse.z = 0.5;
+    mouse.unproject(camera);
+
+    // Set up the ray direction
+    const ray = new THREE.Raycaster(
+      camera.position,
+      mouse.sub(camera.position).normalize()
+    );
+
+    // Get the intersections with the objects in the scene
+    const intersects = ray.intersectObjects(ref.current.children, true);
+
+    // If an object was clicked on, log its material
+    for (let i = 0; i < intersects.length; i++) {
+      const object = intersects[i].object;
+
+      if (object.visible && object.material.transparent === false) {
+        let parentGroup = object;
+        while (parentGroup.type !== "Group") {
+          parentGroup = parentGroup.parent;
+        }
+        if (parentGroup.visible) {
+          const material = object.material;
+          setMaterial(material);
+          setColor(rgbToHex(material.color));
+          if (material.name === "Hair" || material.name === "Skin") setMeshName(material.name)
+          else {
+            let name = ""; 
+            const splitParent = parentGroup.name.split("_")
+            let parentName = splitParent[splitParent.length-1]
+            if (parentName === "CharacterArmature") parentName = ""
+            if (object.name.includes("_")){
+              const split = object.name.split("_")              
+              name = parentName + split[split.length-1]
+            } else {
+              name = parentName + "0"
+            }
+            setMeshName(name)
+          }
+          break;
+        }
+      }
+    }
   }
 
   return (
-    <group ref={ref} {...props} dispose={null}>
+    <group ref={ref} {...props} dispose={null} onClick={handleClick}>
       <OrbitControls />
       <group name="Scene">
         <group name="CharacterArmature">
@@ -58,21 +117,18 @@ export const Man = (props) => {
               skeleton={nodes.Cube039.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube039_1"
               geometry={nodes.Cube039_1.geometry}
               material={materials.Eyebrows}
               skeleton={nodes.Cube039_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube039_2"
               geometry={nodes.Cube039_2.geometry}
               material={materials.Hair}
               skeleton={nodes.Cube039_2.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube039_3"
               geometry={nodes.Cube039_3.geometry}
               material={materials.Eye}
@@ -87,28 +143,24 @@ export const Man = (props) => {
               skeleton={nodes.Cube016.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube016_1"
               geometry={nodes.Cube016_1.geometry}
               material={materials.Eyebrows}
               skeleton={nodes.Cube016_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube016_2"
               geometry={nodes.Cube016_2.geometry}
               material={materials.Eye}
               skeleton={nodes.Cube016_2.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube016_3"
               geometry={nodes.Cube016_3.geometry}
               material={materials.Hair}
               skeleton={nodes.Cube016_3.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube016_4"
               geometry={nodes.Cube016_4.geometry}
               material={materials.Earrings}
@@ -123,28 +175,24 @@ export const Man = (props) => {
               skeleton={nodes.Cube015.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube015_1"
               geometry={nodes.Cube015_1.geometry}
               material={materials.Skin_Darker} /* Beard */
               skeleton={nodes.Cube015_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube015_2"
               geometry={nodes.Cube015_2.geometry}
               material={materials.Eyebrows}
               skeleton={nodes.Cube015_2.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube015_3"
               geometry={nodes.Cube015_3.geometry}
               material={materials.Hair}
               skeleton={nodes.Cube015_3.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube015_4"
               geometry={nodes.Cube015_4.geometry}
               material={materials.Eye}
@@ -159,21 +207,18 @@ export const Man = (props) => {
               skeleton={nodes.Cube014.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube014_1"
               geometry={nodes.Cube014_1.geometry}
               material={materials.Eyebrows}
               skeleton={nodes.Cube014_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube014_2"
               geometry={nodes.Cube014_2.geometry}
               material={materials.Eye}
               skeleton={nodes.Cube014_2.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube014_3"
               geometry={nodes.Cube014_3.geometry}
               material={materials.Hair}
@@ -188,14 +233,12 @@ export const Man = (props) => {
               skeleton={nodes.Cube032.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube032_1"
               geometry={nodes.Cube032_1.geometry}
               material={materials.Hair}
               skeleton={nodes.Cube032_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube032_2"
               geometry={nodes.Cube032_2.geometry}
               material={materials.Eye}
@@ -210,14 +253,12 @@ export const Man = (props) => {
               skeleton={nodes.Cube025.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube025_1"
               geometry={nodes.Cube025_1.geometry}
               material={materials.Hair}
               skeleton={nodes.Cube025_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube025_2"
               geometry={nodes.Cube025_2.geometry}
               material={materials.Eye}
@@ -232,35 +273,30 @@ export const Man = (props) => {
               skeleton={nodes.Cube026.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube026_1"
               geometry={nodes.Cube026_1.geometry}
               material={materials.Eye}
               skeleton={nodes.Cube026_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube026_2"
               geometry={nodes.Cube026_2.geometry}
               material={materials.Eyebrows}
               skeleton={nodes.Cube026_2.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube026_3"
               geometry={nodes.Cube026_3.geometry}
               material={materials.Red_Dark}
               skeleton={nodes.Cube026_3.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube026_4"
               geometry={nodes.Cube026_4.geometry}
               material={materials.Red}
               skeleton={nodes.Cube026_4.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube026_5"
               geometry={nodes.Cube026_5.geometry}
               material={materials.Earrings}
@@ -275,21 +311,18 @@ export const Man = (props) => {
               skeleton={nodes.Cube006.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube006_1"
               geometry={nodes.Cube006_1.geometry}
               material={materials.Eyebrows}
               skeleton={nodes.Cube006_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube006_2"
               geometry={nodes.Cube006_2.geometry}
               material={materials.Hair}
               skeleton={nodes.Cube006_2.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube006_3"
               geometry={nodes.Cube006_3.geometry}
               material={materials.Eye}
@@ -304,28 +337,24 @@ export const Man = (props) => {
               skeleton={nodes.Cube031.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube031_1"
               geometry={nodes.Cube031_1.geometry}
               material={materials.Eyebrows}
               skeleton={nodes.Cube031_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube031_2"
               geometry={nodes.Cube031_2.geometry}
               material={materials.Worker_Yellow}
               skeleton={nodes.Cube031_2.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube031_3"
               geometry={nodes.Cube031_3.geometry}
               material={materials.Moustache}
               skeleton={nodes.Cube031_3.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube031_4"
               geometry={nodes.Cube031_4.geometry}
               material={materials.Eye}
@@ -342,14 +371,12 @@ export const Man = (props) => {
               skeleton={nodes.Cube063.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube063_1"
               geometry={nodes.Cube063_1.geometry}
               material={materials.Green}
               skeleton={nodes.Cube063_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube063_2"
               geometry={nodes.Cube063_2.geometry}
               material={materials.LightGreen}
@@ -364,7 +391,6 @@ export const Man = (props) => {
               skeleton={nodes.Cube070.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube070_1"
               geometry={nodes.Cube070_1.geometry}
               material={materials.LightBrown}
@@ -379,7 +405,6 @@ export const Man = (props) => {
               skeleton={nodes.Cube010.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube010_1"
               geometry={nodes.Cube010_1.geometry}
               material={materials.LightBrown}
@@ -394,7 +419,6 @@ export const Man = (props) => {
               skeleton={nodes.Cube008.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube008_1"
               geometry={nodes.Cube008_1.geometry}
               material={materials.Purple}
@@ -409,21 +433,18 @@ export const Man = (props) => {
               skeleton={nodes.Cube036.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube036_1"
               geometry={nodes.Cube036_1.geometry}
-              material={materials.LightBlue}
+              material={materials.Red_Dark}
               skeleton={nodes.Cube036_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube036_2"
               geometry={nodes.Cube036_2.geometry}
               material={materials.Beige}
               skeleton={nodes.Cube036_2.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube036_3"
               geometry={nodes.Cube036_3.geometry}
               material={materials.Beige}
@@ -438,28 +459,24 @@ export const Man = (props) => {
               skeleton={nodes.Cube043.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube043_1"
               geometry={nodes.Cube043_1.geometry}
               material={materials.Blue}
               skeleton={nodes.Cube043_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube043_2"
               geometry={nodes.Cube043_2.geometry}
               material={materials.Metal}
               skeleton={nodes.Cube043_2.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube043_3"
               geometry={nodes.Cube043_3.geometry}
               material={materials.Beige}
               skeleton={nodes.Cube043_3.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube043_4"
               geometry={nodes.Cube043_4.geometry}
               material={materials.Metal_Dark}
@@ -474,14 +491,12 @@ export const Man = (props) => {
               skeleton={nodes.Cube001.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube001_1"
               geometry={nodes.Cube001_1.geometry}
               material={materials.White}
               skeleton={nodes.Cube001_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube001_2"
               geometry={nodes.Cube001_2.geometry}
               material={materials.Black}
@@ -496,21 +511,18 @@ export const Man = (props) => {
               skeleton={nodes.Cube007.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube007_1"
               geometry={nodes.Cube007_1.geometry}
               material={materials.Tie}
               skeleton={nodes.Cube007_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube007_2"
               geometry={nodes.Cube007_2.geometry}
               material={materials.Suit}
               skeleton={nodes.Cube007_2.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube007_3"
               geometry={nodes.Cube007_3.geometry}
               material={materials.White}
@@ -525,21 +537,18 @@ export const Man = (props) => {
               skeleton={nodes.Cube027.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube027_1"
               geometry={nodes.Cube027_1.geometry}
               material={materials.Worker_Yellow}
               skeleton={nodes.Cube027_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube027_2"
               geometry={nodes.Cube027_2.geometry}
               material={materials.Worker_Vest}
               skeleton={nodes.Cube027_2.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube027_3"
               geometry={nodes.Cube027_3.geometry}
               material={materials.LightBrown}
@@ -550,14 +559,12 @@ export const Man = (props) => {
           {/* LEGS */}
           <group name="Adventurer_Legs" visible={legs === 1}>
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube020"
               geometry={nodes.Cube020.geometry}
               material={materials.Brown}
               skeleton={nodes.Cube020.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube020_1"
               geometry={nodes.Cube020_1.geometry}
               material={materials.Brown2}
@@ -572,14 +579,12 @@ export const Man = (props) => {
               skeleton={nodes.Cube022.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube022_1"
               geometry={nodes.Cube022_1.geometry}
               material={materials.Red_Dark}
               skeleton={nodes.Cube022_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube022_2"
               geometry={nodes.Cube022_2.geometry}
               material={materials.White}
@@ -587,10 +592,9 @@ export const Man = (props) => {
             />
           </group>
           <skinnedMesh
-            onClick={handlePointerDown}
             name="Casual2_Legs"
             geometry={nodes.Casual2_Legs.geometry}
-            material={materials.LightBlue}
+            material={materials.Red_Dark}
             skeleton={nodes.Casual2_Legs.skeleton}
             visible={legs === 3}
           />
@@ -602,38 +606,33 @@ export const Man = (props) => {
               skeleton={nodes.Cube005.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube005_1"
               geometry={nodes.Cube005_1.geometry}
-              material={materials.LightBlue}
+              material={materials.Red_Dark}
               skeleton={nodes.Cube005_1.skeleton}
             />
           </group>
           <skinnedMesh
-            onClick={handlePointerDown}
             name="Farmer_Pants"
             geometry={nodes.Farmer_Pants.geometry}
-            material={materials.LightBlue}
+            material={materials.Red_Dark}
             skeleton={nodes.Farmer_Pants.skeleton}
             visible={legs === 5}
           />
           <group name="King_Legs" visible={legs === 6}>
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube051"
               geometry={nodes.Cube051.geometry}
               material={materials.DarkBrown}
               skeleton={nodes.Cube051.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube051_1"
               geometry={nodes.Cube051_1.geometry}
               material={materials.Metal}
               skeleton={nodes.Cube051_1.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube051_2"
               geometry={nodes.Cube051_2.geometry}
               material={materials.Metal_Dark}
@@ -648,15 +647,13 @@ export const Man = (props) => {
               skeleton={nodes.Cube009.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube009_1"
               geometry={nodes.Cube009_1.geometry}
-              material={materials.LightBlue}
+              material={materials.Red_Dark}
               skeleton={nodes.Cube009_1.skeleton}
             />
           </group>
           <skinnedMesh
-            onClick={handlePointerDown}
             name="Suit_Legs"
             geometry={nodes.Suit_Legs.geometry}
             material={materials.Suit}
@@ -665,14 +662,12 @@ export const Man = (props) => {
           />
           <group name="Worker_Legs" visible={legs === 9}>
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube029"
               geometry={nodes.Cube029.geometry}
               material={materials.Brown}
               skeleton={nodes.Cube029.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube029_1"
               geometry={nodes.Cube029_1.geometry}
               material={materials.Brown2}
@@ -683,14 +678,12 @@ export const Man = (props) => {
           {/* FEET */}
           <group name="Adventurer_Feet" visible={feet === 1}>
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube052"
               geometry={nodes.Cube052.geometry}
               material={materials.Grey}
               skeleton={nodes.Cube052.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube052_1"
               geometry={nodes.Cube052_1.geometry}
               material={materials.Black}
@@ -705,7 +698,6 @@ export const Man = (props) => {
               skeleton={nodes.Cube017.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube017_1"
               geometry={nodes.Cube017_1.geometry}
               material={materials.Red_Dark}
@@ -714,14 +706,12 @@ export const Man = (props) => {
           </group>
           <group name="Casual2_Feet" visible={feet === 3}>
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube003"
               geometry={nodes.Cube003.geometry}
               material={materials.Red_Dark}
               skeleton={nodes.Cube003.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube003_1"
               geometry={nodes.Cube003_1.geometry}
               material={materials.White}
@@ -730,14 +720,12 @@ export const Man = (props) => {
           </group>
           <group name="Casual_Feet" visible={feet === 4}>
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube000"
               geometry={nodes.Cube000.geometry}
               material={materials.Purple}
               skeleton={nodes.Cube000.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube000_1"
               geometry={nodes.Cube000_1.geometry}
               material={materials.White}
@@ -746,14 +734,12 @@ export const Man = (props) => {
           </group>
           <group name="Farmer_Feet" visible={feet === 5}>
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube035"
               geometry={nodes.Cube035.geometry}
               material={materials.Brown}
               skeleton={nodes.Cube035.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube035_1"
               geometry={nodes.Cube035_1.geometry}
               material={materials.Brown2}
@@ -761,7 +747,6 @@ export const Man = (props) => {
             />
           </group>
           <skinnedMesh
-            onClick={handlePointerDown}
             name="King_Feet"
             geometry={nodes.King_Feet.geometry}
             material={materials.Metal}
@@ -776,7 +761,6 @@ export const Man = (props) => {
               skeleton={nodes.Cube208.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube208_1"
               geometry={nodes.Cube208_1.geometry}
               material={materials.Black}
@@ -784,7 +768,6 @@ export const Man = (props) => {
             />
           </group>
           <skinnedMesh
-            onClick={handlePointerDown}
             name="Suit_Feet"
             geometry={nodes.Suit_Feet.geometry}
             material={materials.Black}
@@ -793,14 +776,12 @@ export const Man = (props) => {
           />
           <group name="Worker_Feet" visible={feet === 9}>
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube028"
               geometry={nodes.Cube028.geometry}
               material={materials.Grey}
               skeleton={nodes.Cube028.skeleton}
             />
             <skinnedMesh
-              onClick={handlePointerDown}
               name="Cube028_1"
               geometry={nodes.Cube028_1.geometry}
               material={materials.Black}
