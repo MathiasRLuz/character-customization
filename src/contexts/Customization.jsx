@@ -1,5 +1,4 @@
 import { createContext, useContext, useState } from "react";
-
 const CustomizationContext = createContext({});
 
 export const CustomizationProvider = (props) => {
@@ -13,6 +12,8 @@ export const CustomizationProvider = (props) => {
   const [totalHead, setTotalHead] = useState(0);
   const [totalFeet, setTotalFeet] = useState(0);
   const [totalLegs, setTotalLegs] = useState(0);
+  const [color, setColor] = useState("#fff");
+  const [material, setMaterial] = useState(null);
 
   return (
     <CustomizationContext.Provider
@@ -37,6 +38,10 @@ export const CustomizationProvider = (props) => {
         setTotalFeet,
         totalLegs,
         setTotalLegs,
+        color,
+        setColor,
+        material,
+        setMaterial,
       }}
     >
       {props.children}
