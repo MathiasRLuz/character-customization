@@ -34,63 +34,63 @@ const Configurator = () => {
     }
   };
 
-const prevBody = () => {
-    if (body > 1) {
+  const prevBody = () => {
+    if (body > 0) {
       setBody(body - 1);
     } else {
-      setBody(totalBody);
+      setBody(totalBody-1);
     }
   };
   const nextBody = () => {
-    if (body < totalBody) {
+    if (body < totalBody-1) {
       setBody(body + 1);
     } else {
-      setBody(1);
+      setBody(0);
     }
   };
 
   const prevHead = () => {
-    if (head > 1) {
+    if (head > 0) {
       setHead(head - 1);
     } else {
-      setHead(totalHead);
+      setHead(totalHead-1);
     }
   };
   const nextHead = () => {
-    if (head < totalHead) {
+    if (head < totalHead-1) {
       setHead(head + 1);
     } else {
-      setHead(1);
+      setHead(0);
     }
   };
 
   const prevFeet = () => {
-    if (feet > 1) {
+    if (feet > 0) {
       setFeet(feet - 1);
     } else {
-      setFeet(totalFeet);
+      setFeet(totalFeet-1);
     }
   };
   const nextFeet = () => {
-    if (feet < totalFeet) {
+    if (feet < totalFeet-1) {
       setFeet(feet + 1);
     } else {
-      setFeet(1);
+      setFeet(0);
     }
   };
 
   const prevLegs = () => {
-    if (legs > 1) {
+    if (legs > 0) {
       setLegs(legs - 1);
     } else {
-      setLegs(totalLegs);
+      setLegs(totalLegs-1);
     }
   };
   const nextLegs = () => {
-    if (legs < totalLegs) {
+    if (legs < totalLegs-1) {
       setLegs(legs + 1);
     } else {
-      setLegs(1);
+      setLegs(0);
     }
   };
 
@@ -110,7 +110,7 @@ const prevBody = () => {
         padding: "8px",
         borderRadius: "10px",
       }}
-    >    
+    >
       <div
         className="configuration"
         style={{

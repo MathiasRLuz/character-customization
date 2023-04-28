@@ -2,10 +2,10 @@ import { createContext, useContext, useState } from "react";
 const CustomizationContext = createContext({});
 
 export const CustomizationProvider = (props) => {
-  const [body, setBody] = useState(1);
-  const [head, setHead] = useState(1);
-  const [feet, setFeet] = useState(1);
-  const [legs, setLegs] = useState(3);
+  const [body, setBody] = useState(0);
+  const [head, setHead] = useState(0);
+  const [feet, setFeet] = useState(0);
+  const [legs, setLegs] = useState(2);
   const [animationIndex, setAnimationIndex] = useState(8);
   const [totalAnimations, setTotalAnimations] = useState(0);
   const [totalBody, setTotalBody] = useState(0);

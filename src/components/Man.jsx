@@ -29,14 +29,14 @@ export const Man = (props) => {
     TOP4: materials.Brown,
     LEGS1: materials.Red,
     LEGS2: materials.Black,
-    LEGS3: materials.Metal, 
+    LEGS3: materials.Metal,
     FEET1: materials.Purple,
     FEET2: materials.White,
-    FEET3: materials.Blue,   
+    FEET3: materials.Blue,
   };
   const {
     body,
-    feet,
+    feet: feets,
     head,
     legs,
     animationIndex,
@@ -52,12 +52,82 @@ export const Man = (props) => {
 
   setTotalAnimations(names.length);
 
+  const updateBody = () => {
+    bodyRef.current.children.forEach(element => {
+      element.visible = false
+    });
+    bodyRef.current.children[body].visible = true;
+  }
+
+  const updateHead = () => {
+    headRef.current.children.forEach(element => {
+      element.visible = false
+    });
+    headRef.current.children[head].visible = true;
+  }
+
+  const updateLegs = () => {
+    legsRef.current.children.forEach(element => {
+      element.visible = false
+    });
+    legsRef.current.children[legs].visible = true;
+  }
+
+  const updateFeets = () => {
+    feetsRef.current.children.forEach(element => {
+      element.visible = false
+    });
+    feetsRef.current.children[feets].visible = true;
+  }
   useEffect(() => {
+    updateHead()
+  }, [head])
+
+  useEffect(() => {
+    updateBody()
+  }, [body])
+
+  useEffect(() => {
+    updateLegs()
+  }, [legs])
+
+  useEffect(() => {
+    updateFeets()
+  }, [feets])
+
+  useEffect(() => {
+    updateHead()
+    updateBody()
+    updateLegs()
+    updateFeets()
     setTotalBody(bodyRef.current.children.length);
     setTotalFeet(feetsRef.current.children.length);
     setTotalHead(headRef.current.children.length);
     setTotalLegs(legsRef.current.children.length);
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    bodyRef.current.children.forEach(element => {
+      element.visible = false
+    });
+    bodyRef.current.children[body].visible = true;
+    feetsRef.current.children.forEach(element => {
+      element.visible = false
+    });
+    feetsRef.current.children[feets].visible = true;
+    headRef.current.children.forEach(element => {
+      element.visible = false
+    });
+    headRef.current.children[head].visible = true;
+    legsRef.current.children.forEach(element => {
+      element.visible = false
+    });
+    legsRef.current.children[legs].visible = true;
+    setTotalBody(bodyRef.current.children.length);
+    setTotalFeet(feetsRef.current.children.length);
+    setTotalHead(headRef.current.children.length);
+    setTotalLegs(legsRef.current.children.length);
+  }, []);
   // Change animation when the index changes
   useEffect(() => {
     // Reset and fade in animation after an index has been changed
@@ -141,7 +211,7 @@ export const Man = (props) => {
 
           {/* HEAD */}
           <group ref={headRef} name="HEAD">
-            <group name="Adventurer_Head" visible={head === 1}>
+            <group name="Adventurer_Head" >
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube039.geometry}
@@ -167,7 +237,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube039_3.skeleton}
               />
             </group>
-            <group name="Beach_Head" visible={head === 2}>
+            <group name="Beach_Head" >
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube016.geometry}
@@ -199,7 +269,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube016_4.skeleton}
               />
             </group>
-            <group name="Casual2_Head" visible={head === 3}>
+            <group name="Casual2_Head" >
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube015.geometry}
@@ -231,7 +301,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube015_4.skeleton}
               />
             </group>
-            <group name="Casual_Head" visible={head === 4}>
+            <group name="Casual_Head" >
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube014.geometry}
@@ -257,7 +327,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube014_3.skeleton}
               />
             </group>
-            <group name="Farmer_Head" visible={head === 5}>
+            <group name="Farmer_Head" >
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube032.geometry}
@@ -277,7 +347,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube032_2.skeleton}
               />
             </group>
-            <group name="King_Head" visible={head === 6}>
+            <group name="King_Head" >
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube025.geometry}
@@ -297,7 +367,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube025_2.skeleton}
               />
             </group>
-            <group name="Punk_Head" visible={head === 7}>
+            <group name="Punk_Head" >
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube026.geometry}
@@ -335,7 +405,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube026_5.skeleton}
               />
             </group>
-            <group name="Suit_Head" visible={head === 8}>
+            <group name="Suit_Head" >
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube006.geometry}
@@ -361,7 +431,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube006_3.skeleton}
               />
             </group>
-            <group name="Worker_Head" visible={head === 9}>
+            <group name="Worker_Head" >
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube031.geometry}
@@ -397,7 +467,7 @@ export const Man = (props) => {
 
           {/* BODY */}
           <group ref={bodyRef} name="BODY">
-            <group name="Adventurer_Body" visible={body === 1}>
+            <group name="Adventurer_Body" >
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube063.geometry}
@@ -417,7 +487,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube063_2.skeleton}
               />
             </group>
-            <group name="Beach_Body" visible={body === 2}>
+            <group name="Beach_Body" >
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube070.geometry}
@@ -431,7 +501,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube070_1.skeleton}
               />
             </group>
-            <group name="Casual2_Body" visible={body === 3}>
+            <group name="Casual2_Body" >
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube010.geometry}
@@ -445,7 +515,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube010_1.skeleton}
               />
             </group>
-            <group name="Casual_Body" visible={body === 4}>
+            <group name="Casual_Body" >
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube008.geometry}
@@ -459,7 +529,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube008_1.skeleton}
               />
             </group>
-            <group name="Farmer_Body" visible={body === 5}>
+            <group name="Farmer_Body" >
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube036.geometry}
@@ -485,7 +555,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube036_3.skeleton}
               />
             </group>
-            <group name="King_Body" visible={body === 6}>
+            <group name="King_Body" >
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube043.geometry}
@@ -517,7 +587,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube043_4.skeleton}
               />
             </group>
-            <group name="Punk_Body" visible={body === 7}>
+            <group name="Punk_Body" >
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube001.geometry}
@@ -537,7 +607,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube001_2.skeleton}
               />
             </group>
-            <group name="Suit_Body" visible={body === 8}>
+            <group name="Suit_Body" >
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube007.geometry}
@@ -563,7 +633,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube007_3.skeleton}
               />
             </group>
-            <group name="Worker_Body" visible={body === 9}>
+            <group name="Worker_Body" >
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube027.geometry}
@@ -592,8 +662,8 @@ export const Man = (props) => {
           </group>
 
           {/* LEGS */}
-          <group ref={legsRef} name="LEGS">                                
-            <group name="Adventurer_Legs" visible={legs === 1}>
+          <group ref={legsRef} name="LEGS">
+            <group name="Adventurer_Legs" >
               <skinnedMesh
                 name="Legs1"
                 geometry={nodes.Cube020.geometry}
@@ -607,7 +677,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube020_1.skeleton}
               />
             </group>
-            <group name="Beach_Legs" visible={legs === 2}>
+            <group name="Beach_Legs" >
               <skinnedMesh
                 name="Legs"
                 geometry={nodes.Cube022.geometry}
@@ -628,12 +698,13 @@ export const Man = (props) => {
               />
             </group>
             <skinnedMesh
-              name="Casual2_Legs" visible={legs === 3}
+              name="Casual2_Legs"
+              
               geometry={nodes.Casual2_Legs.geometry}
               material={myMaterials.LEGS1}
-              skeleton={nodes.Casual2_Legs.skeleton}              
+              skeleton={nodes.Casual2_Legs.skeleton}
             />
-            <group name="Casual_Legs" visible={legs === 4}>
+            <group name="Casual_Legs" >
               <skinnedMesh
                 name="Legs"
                 geometry={nodes.Cube005.geometry}
@@ -652,9 +723,9 @@ export const Man = (props) => {
               geometry={nodes.Farmer_Pants.geometry}
               material={myMaterials.LEGS1}
               skeleton={nodes.Farmer_Pants.skeleton}
-              visible={legs === 5}
+              
             />
-            <group name="King_Legs" visible={legs === 6}>
+            <group name="King_Legs" >
               <skinnedMesh
                 name="Legs1"
                 geometry={nodes.Cube051.geometry}
@@ -674,7 +745,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube051_2.skeleton}
               />
             </group>
-            <group name="Punk_Legs" visible={legs === 7}>
+            <group name="Punk_Legs" >
               <skinnedMesh
                 name="Legs"
                 geometry={nodes.Cube009.geometry}
@@ -693,9 +764,9 @@ export const Man = (props) => {
               geometry={nodes.Suit_Legs.geometry}
               material={myMaterials.LEGS1}
               skeleton={nodes.Suit_Legs.skeleton}
-              visible={legs === 8}
+              
             />
-            <group name="Worker_Legs" visible={legs === 9}>
+            <group name="Worker_Legs" >
               <skinnedMesh
                 name="Legs1"
                 geometry={nodes.Cube029.geometry}
@@ -713,7 +784,7 @@ export const Man = (props) => {
 
           {/* FEETS */}
           <group ref={feetsRef} name="FEETS">
-            <group name="Adventurer_Feet" visible={feet === 1}>
+            <group name="Adventurer_Feet" >
               <skinnedMesh
                 name="Feet1"
                 geometry={nodes.Cube052.geometry}
@@ -727,7 +798,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube052_1.skeleton}
               />
             </group>
-            <group name="Beach_Feet" visible={feet === 2}>
+            <group name="Beach_Feet" >
               <skinnedMesh
                 name="Feet"
                 geometry={nodes.Cube017.geometry}
@@ -741,7 +812,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube017_1.skeleton}
               />
             </group>
-            <group name="Casual2_Feet" visible={feet === 3}>
+            <group name="Casual2_Feet" >
               <skinnedMesh
                 name="Feet1"
                 geometry={nodes.Cube003.geometry}
@@ -755,7 +826,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube003_1.skeleton}
               />
             </group>
-            <group name="Casual_Feet" visible={feet === 4}>
+            <group name="Casual_Feet" >
               <skinnedMesh
                 name="Feet1"
                 geometry={nodes.Cube000.geometry}
@@ -769,7 +840,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube000_1.skeleton}
               />
             </group>
-            <group name="Farmer_Feet" visible={feet === 5}>
+            <group name="Farmer_Feet" >
               <skinnedMesh
                 name="Feet1"
                 geometry={nodes.Cube035.geometry}
@@ -788,9 +859,9 @@ export const Man = (props) => {
               geometry={nodes.King_Feet.geometry}
               material={myMaterials.FEET1}
               skeleton={nodes.King_Feet.skeleton}
-              visible={feet === 6}
+              
             />
-            <group name="Punk_Feet" visible={feet === 7}>
+            <group name="Punk_Feet" >
               <skinnedMesh
                 name="Feet"
                 geometry={nodes.Cube208.geometry}
@@ -809,7 +880,7 @@ export const Man = (props) => {
               geometry={nodes.Suit_Feet.geometry}
               material={myMaterials.FEET1}
               skeleton={nodes.Suit_Feet.skeleton}
-              visible={feet === 8}
+              
             />
           </group>
         </group>
