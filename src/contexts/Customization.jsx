@@ -5,8 +5,8 @@ export const CustomizationProvider = (props) => {
   const [body, setBody] = useState(1);
   const [head, setHead] = useState(1);
   const [feet, setFeet] = useState(1);
-  const [legs, setLegs] = useState(1);
-  const [animationIndex, setAnimationIndex] = useState(4);
+  const [legs, setLegs] = useState(3);
+  const [animationIndex, setAnimationIndex] = useState(8);
   const [totalAnimations, setTotalAnimations] = useState(0);
   const [totalBody, setTotalBody] = useState(0);
   const [totalHead, setTotalHead] = useState(0);
