@@ -15,7 +15,7 @@ export const Man = (props) => {
   const bodyRef = useRef();
   const legsRef = useRef();
   const feetsRef = useRef();
-  console.log(materials)
+  // console.log(materials)
 
   const { ref, actions, names } = useAnimations(animations);
   const myMaterials = {
@@ -49,11 +49,15 @@ export const Man = (props) => {
     setMaterial,
     setMeshName,
   } = useCustomization();
+
   setTotalAnimations(names.length);
-  setTotalBody(9);
-  setTotalFeet(9);
-  setTotalHead(9);
-  setTotalLegs(9);
+
+  useEffect(() => {
+    setTotalBody(bodyRef.current.children.length);
+    setTotalFeet(feetsRef.current.children.length);
+    setTotalHead(headRef.current.children.length);
+    setTotalLegs(legsRef.current.children.length);
+  }, [])
   // Change animation when the index changes
   useEffect(() => {
     // Reset and fade in animation after an index has been changed
@@ -807,20 +811,6 @@ export const Man = (props) => {
               skeleton={nodes.Suit_Feet.skeleton}
               visible={feet === 8}
             />
-            <group name="Worker_Feet" visible={feet === 9}>
-              <skinnedMesh
-                name="Feet2"
-                geometry={nodes.Cube028.geometry}
-                material={myMaterials.FEET2}
-                skeleton={nodes.Cube028.skeleton}
-              />
-              <skinnedMesh
-                name="Feet1"
-                geometry={nodes.Cube028_1.geometry}
-                material={myMaterials.FEET1}
-                skeleton={nodes.Cube028_1.skeleton}
-              />
-            </group>
           </group>
         </group>
       </group>
