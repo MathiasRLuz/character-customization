@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Man } from "./components/Man";
+import ExportButton, { Man } from "./components/Man";
 import { CustomizationProvider } from "./contexts/Customization";
 import Configurator from "./components/Configurator";
 import { HexColorPicker } from "react-colorful";
@@ -57,6 +57,7 @@ function App() {
       </Canvas>
       <Picker />
       <Configurator />
+      <ExportButton/>
     </div>
   );
 }

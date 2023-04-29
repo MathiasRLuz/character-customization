@@ -8,6 +8,9 @@ import { useGLTF, useAnimations, OrbitControls } from "@react-three/drei";
 import { useCustomization } from "../contexts/Customization";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
+import { saveAs } from "file-saver";
+
 export const Man = (props) => {
   const { camera } = useThree();
   const { nodes, materials, animations } = useGLTF("./models/man.glb");
@@ -36,7 +39,7 @@ export const Man = (props) => {
   };
   const {
     body,
-    feet: feets,
+    feet,
     head,
     legs,
     animationIndex,
@@ -48,58 +51,60 @@ export const Man = (props) => {
     setColor,
     setMaterial,
     setMeshName,
+    save,
+    setSave,
   } = useCustomization();
 
   setTotalAnimations(names.length);
 
   const updateBody = () => {
-    bodyRef.current.children.forEach(element => {
-      element.visible = false
+    bodyRef.current.children.forEach((element) => {
+      element.visible = false;
     });
     bodyRef.current.children[body].visible = true;
-  }
+  };
 
   const updateHead = () => {
-    headRef.current.children.forEach(element => {
-      element.visible = false
+    headRef.current.children.forEach((element) => {
+      element.visible = false;
     });
     headRef.current.children[head].visible = true;
-  }
+  };
 
   const updateLegs = () => {
-    legsRef.current.children.forEach(element => {
-      element.visible = false
+    legsRef.current.children.forEach((element) => {
+      element.visible = false;
     });
     legsRef.current.children[legs].visible = true;
-  }
+  };
 
   const updateFeets = () => {
-    feetsRef.current.children.forEach(element => {
-      element.visible = false
+    feetsRef.current.children.forEach((element) => {
+      element.visible = false;
     });
-    feetsRef.current.children[feets].visible = true;
-  }
+    feetsRef.current.children[feet].visible = true;
+  };
   useEffect(() => {
-    updateHead()
-  }, [head])
+    updateHead();
+  }, [head]);
 
   useEffect(() => {
-    updateBody()
-  }, [body])
+    updateBody();
+  }, [body]);
 
   useEffect(() => {
-    updateLegs()
-  }, [legs])
+    updateLegs();
+  }, [legs]);
 
   useEffect(() => {
-    updateFeets()
-  }, [feets])
+    updateFeets();
+  }, [feet]);
 
   useEffect(() => {
-    updateHead()
-    updateBody()
-    updateLegs()
-    updateFeets()
+    updateHead();
+    updateBody();
+    updateLegs();
+    updateFeets();
     setTotalBody(bodyRef.current.children.length);
     setTotalFeet(feetsRef.current.children.length);
     setTotalHead(headRef.current.children.length);
@@ -107,27 +112,12 @@ export const Man = (props) => {
   }, []);
 
   useEffect(() => {
-    bodyRef.current.children.forEach(element => {
-      element.visible = false
-    });
-    bodyRef.current.children[body].visible = true;
-    feetsRef.current.children.forEach(element => {
-      element.visible = false
-    });
-    feetsRef.current.children[feets].visible = true;
-    headRef.current.children.forEach(element => {
-      element.visible = false
-    });
-    headRef.current.children[head].visible = true;
-    legsRef.current.children.forEach(element => {
-      element.visible = false
-    });
-    legsRef.current.children[legs].visible = true;
-    setTotalBody(bodyRef.current.children.length);
-    setTotalFeet(feetsRef.current.children.length);
-    setTotalHead(headRef.current.children.length);
-    setTotalLegs(legsRef.current.children.length);
-  }, []);
+    if (save) {
+      handleExportClick();
+      setSave(false)
+    }
+  }, [save]);
+
   // Change animation when the index changes
   useEffect(() => {
     // Reset and fade in animation after an index has been changed
@@ -202,6 +192,29 @@ export const Man = (props) => {
     }
   }
 
+  const handleExportClick = () => {
+    const gltfExporter = new GLTFExporter();
+
+    // Export the object as a GLTF file
+    gltfExporter.parse(
+      ref.current,
+      (gltf) => {
+        // Save the GLTF data to a file
+        const gltfString = JSON.stringify(gltf);
+        const blob = new Blob([gltfString], {
+          type: "application/octet-stream",
+        });
+        saveAs(blob, "model.gltf");
+      },
+      (error) => {
+
+      }, 
+      {
+        trs: true,
+      }
+    );
+  };
+
   return (
     <group ref={ref} {...props} dispose={null} onClick={handleClick}>
       <OrbitControls />
@@ -211,7 +224,7 @@ export const Man = (props) => {
 
           {/* HEAD */}
           <group ref={headRef} name="HEAD">
-            <group name="Adventurer_Head" >
+            <group name="Adventurer_Head">
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube039.geometry}
@@ -237,7 +250,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube039_3.skeleton}
               />
             </group>
-            <group name="Beach_Head" >
+            <group name="Beach_Head">
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube016.geometry}
@@ -269,7 +282,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube016_4.skeleton}
               />
             </group>
-            <group name="Casual2_Head" >
+            <group name="Casual2_Head">
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube015.geometry}
@@ -301,7 +314,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube015_4.skeleton}
               />
             </group>
-            <group name="Casual_Head" >
+            <group name="Casual_Head">
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube014.geometry}
@@ -327,7 +340,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube014_3.skeleton}
               />
             </group>
-            <group name="Farmer_Head" >
+            <group name="Farmer_Head">
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube032.geometry}
@@ -347,7 +360,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube032_2.skeleton}
               />
             </group>
-            <group name="King_Head" >
+            <group name="King_Head">
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube025.geometry}
@@ -367,7 +380,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube025_2.skeleton}
               />
             </group>
-            <group name="Punk_Head" >
+            <group name="Punk_Head">
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube026.geometry}
@@ -405,7 +418,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube026_5.skeleton}
               />
             </group>
-            <group name="Suit_Head" >
+            <group name="Suit_Head">
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube006.geometry}
@@ -431,7 +444,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube006_3.skeleton}
               />
             </group>
-            <group name="Worker_Head" >
+            <group name="Worker_Head">
               <skinnedMesh
                 name="Head"
                 geometry={nodes.Cube031.geometry}
@@ -467,7 +480,7 @@ export const Man = (props) => {
 
           {/* BODY */}
           <group ref={bodyRef} name="BODY">
-            <group name="Adventurer_Body" >
+            <group name="Adventurer_Body">
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube063.geometry}
@@ -487,7 +500,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube063_2.skeleton}
               />
             </group>
-            <group name="Beach_Body" >
+            <group name="Beach_Body">
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube070.geometry}
@@ -501,7 +514,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube070_1.skeleton}
               />
             </group>
-            <group name="Casual2_Body" >
+            <group name="Casual2_Body">
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube010.geometry}
@@ -515,7 +528,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube010_1.skeleton}
               />
             </group>
-            <group name="Casual_Body" >
+            <group name="Casual_Body">
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube008.geometry}
@@ -529,7 +542,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube008_1.skeleton}
               />
             </group>
-            <group name="Farmer_Body" >
+            <group name="Farmer_Body">
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube036.geometry}
@@ -555,7 +568,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube036_3.skeleton}
               />
             </group>
-            <group name="King_Body" >
+            <group name="King_Body">
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube043.geometry}
@@ -587,7 +600,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube043_4.skeleton}
               />
             </group>
-            <group name="Punk_Body" >
+            <group name="Punk_Body">
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube001.geometry}
@@ -607,7 +620,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube001_2.skeleton}
               />
             </group>
-            <group name="Suit_Body" >
+            <group name="Suit_Body">
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube007.geometry}
@@ -633,7 +646,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube007_3.skeleton}
               />
             </group>
-            <group name="Worker_Body" >
+            <group name="Worker_Body">
               <skinnedMesh
                 name="Arms"
                 geometry={nodes.Cube027.geometry}
@@ -663,7 +676,7 @@ export const Man = (props) => {
 
           {/* LEGS */}
           <group ref={legsRef} name="LEGS">
-            <group name="Adventurer_Legs" >
+            <group name="Adventurer_Legs">
               <skinnedMesh
                 name="Legs1"
                 geometry={nodes.Cube020.geometry}
@@ -677,7 +690,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube020_1.skeleton}
               />
             </group>
-            <group name="Beach_Legs" >
+            <group name="Beach_Legs">
               <skinnedMesh
                 name="Legs"
                 geometry={nodes.Cube022.geometry}
@@ -699,12 +712,11 @@ export const Man = (props) => {
             </group>
             <skinnedMesh
               name="Casual2_Legs"
-              
               geometry={nodes.Casual2_Legs.geometry}
               material={myMaterials.LEGS1}
               skeleton={nodes.Casual2_Legs.skeleton}
             />
-            <group name="Casual_Legs" >
+            <group name="Casual_Legs">
               <skinnedMesh
                 name="Legs"
                 geometry={nodes.Cube005.geometry}
@@ -723,9 +735,8 @@ export const Man = (props) => {
               geometry={nodes.Farmer_Pants.geometry}
               material={myMaterials.LEGS1}
               skeleton={nodes.Farmer_Pants.skeleton}
-              
             />
-            <group name="King_Legs" >
+            <group name="King_Legs">
               <skinnedMesh
                 name="Legs1"
                 geometry={nodes.Cube051.geometry}
@@ -745,7 +756,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube051_2.skeleton}
               />
             </group>
-            <group name="Punk_Legs" >
+            <group name="Punk_Legs">
               <skinnedMesh
                 name="Legs"
                 geometry={nodes.Cube009.geometry}
@@ -764,9 +775,8 @@ export const Man = (props) => {
               geometry={nodes.Suit_Legs.geometry}
               material={myMaterials.LEGS1}
               skeleton={nodes.Suit_Legs.skeleton}
-              
             />
-            <group name="Worker_Legs" >
+            <group name="Worker_Legs">
               <skinnedMesh
                 name="Legs1"
                 geometry={nodes.Cube029.geometry}
@@ -784,7 +794,7 @@ export const Man = (props) => {
 
           {/* FEETS */}
           <group ref={feetsRef} name="FEETS">
-            <group name="Adventurer_Feet" >
+            <group name="Adventurer_Feet">
               <skinnedMesh
                 name="Feet1"
                 geometry={nodes.Cube052.geometry}
@@ -798,7 +808,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube052_1.skeleton}
               />
             </group>
-            <group name="Beach_Feet" >
+            <group name="Beach_Feet">
               <skinnedMesh
                 name="Feet"
                 geometry={nodes.Cube017.geometry}
@@ -812,7 +822,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube017_1.skeleton}
               />
             </group>
-            <group name="Casual2_Feet" >
+            <group name="Casual2_Feet">
               <skinnedMesh
                 name="Feet1"
                 geometry={nodes.Cube003.geometry}
@@ -826,7 +836,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube003_1.skeleton}
               />
             </group>
-            <group name="Casual_Feet" >
+            <group name="Casual_Feet">
               <skinnedMesh
                 name="Feet1"
                 geometry={nodes.Cube000.geometry}
@@ -840,7 +850,7 @@ export const Man = (props) => {
                 skeleton={nodes.Cube000_1.skeleton}
               />
             </group>
-            <group name="Farmer_Feet" >
+            <group name="Farmer_Feet">
               <skinnedMesh
                 name="Feet1"
                 geometry={nodes.Cube035.geometry}
@@ -859,9 +869,8 @@ export const Man = (props) => {
               geometry={nodes.King_Feet.geometry}
               material={myMaterials.FEET1}
               skeleton={nodes.King_Feet.skeleton}
-              
             />
-            <group name="Punk_Feet" >
+            <group name="Punk_Feet">
               <skinnedMesh
                 name="Feet"
                 geometry={nodes.Cube208.geometry}
@@ -880,7 +889,6 @@ export const Man = (props) => {
               geometry={nodes.Suit_Feet.geometry}
               material={myMaterials.FEET1}
               skeleton={nodes.Suit_Feet.skeleton}
-              
             />
           </group>
         </group>
@@ -890,3 +898,27 @@ export const Man = (props) => {
 };
 
 useGLTF.preload("./models/man.glb");
+
+function ExportButton() {
+  const { setSave } = useCustomization();
+  const handleClick = () => {
+    console.log("Exporting");
+    setSave(true)
+  };
+
+  return (
+    <div style={{ bottom: "50px", position: "fixed", margin: "70px" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <button onClick={handleClick}>Export GLTF</button>
+      </div>
+    </div>
+  );
+}
+
+export default ExportButton;

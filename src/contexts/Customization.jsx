@@ -15,6 +15,7 @@ export const CustomizationProvider = (props) => {
   const [color, setColor] = useState("#fff");
   const [material, setMaterial] = useState(null);
   const [meshName, setMeshName] = useState("");
+  const [save, setSave] = useState(false);
 
   return (
     <CustomizationContext.Provider
@@ -45,6 +46,8 @@ export const CustomizationProvider = (props) => {
         setMaterial,
         meshName,
         setMeshName,
+        save,
+        setSave,
       }}
     >
       {props.children}
