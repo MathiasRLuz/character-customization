@@ -10,7 +10,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
 import { saveAs } from "file-saver";
-
+import { rgbToHex } from "./Configurator";
 export const Man = (props) => {
   const { camera } = useThree();
   const { nodes, materials, animations } = useGLTF("./models/man.glb");
@@ -53,22 +53,46 @@ export const Man = (props) => {
     setMeshName,
     save,
     setSave,
+    setHeadMaterials,
+    setBodyMaterials,
+    setLegsMaterials,
+    setFeetMaterials,
   } = useCustomization();
 
   setTotalAnimations(names.length);
-
-  const updateBody = () => {
-    bodyRef.current.children.forEach((element) => {
-      element.visible = false;
-    });
-    bodyRef.current.children[body].visible = true;
-  };
 
   const updateHead = () => {
     headRef.current.children.forEach((element) => {
       element.visible = false;
     });
     headRef.current.children[head].visible = true;
+    let materials = [];
+    headRef.current.children[head].children.forEach((element) => {
+      if (!materials.includes(element.material)) {
+        materials.push(element.material);
+      }
+    });
+    setHeadMaterials(materials);
+  };
+
+  const updateBody = () => {
+    bodyRef.current.children.forEach((element) => {
+      element.visible = false;
+    });
+    bodyRef.current.children[body].visible = true;
+    let materials = [];
+    let index = 1;
+    bodyRef.current.children[body].children.forEach((element) => {
+      if (
+        !materials.includes(element.material) &&
+        element.material.name != "Skin"
+      ) {
+        element.material.name = `C${index}`;
+        index++;
+        materials.push(element.material);
+      }
+    });
+    setBodyMaterials(materials);
   };
 
   const updateLegs = () => {
@@ -76,6 +100,19 @@ export const Man = (props) => {
       element.visible = false;
     });
     legsRef.current.children[legs].visible = true;
+    let materials = [];
+    let index = 1;
+    legsRef.current.children[legs].children.forEach((element) => {
+      if (
+        !materials.includes(element.material) &&
+        element.material.name != "Skin"
+      ) {
+        element.material.name = `C${index}`;
+        index++;
+        materials.push(element.material);
+      }
+    });
+    setLegsMaterials(materials);
   };
 
   const updateFeets = () => {
@@ -83,6 +120,19 @@ export const Man = (props) => {
       element.visible = false;
     });
     feetsRef.current.children[feet].visible = true;
+    let materials = [];
+    let index = 1;
+    feetsRef.current.children[feet].children.forEach((element) => {
+      if (
+        !materials.includes(element.material) &&
+        element.material.name != "Skin"
+      ) {
+        element.material.name = `C${index}`;
+        index++;
+        materials.push(element.material);
+      }
+    });
+    setFeetMaterials(materials);
   };
   useEffect(() => {
     updateHead();
@@ -101,10 +151,6 @@ export const Man = (props) => {
   }, [feet]);
 
   useEffect(() => {
-    updateHead();
-    updateBody();
-    updateLegs();
-    updateFeets();
     setTotalBody(bodyRef.current.children.length);
     setTotalFeet(feetsRef.current.children.length);
     setTotalHead(headRef.current.children.length);
@@ -114,7 +160,7 @@ export const Man = (props) => {
   useEffect(() => {
     if (save) {
       handleExportClick();
-      setSave(false)
+      setSave(false);
     }
   }, [save]);
 
@@ -125,14 +171,6 @@ export const Man = (props) => {
     // In the clean-up phase, fade it out
     return () => actions[names[animationIndex]].fadeOut(0.5);
   }, [animationIndex, actions, names]);
-
-  function rgbToHex(color) {
-    const r = Math.ceil(color.r * 255);
-    const g = Math.ceil(color.g * 255);
-    const b = Math.ceil(color.b * 255);
-    const hex = ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-    return "#" + hex;
-  }
 
   function handleClick(event) {
     // Prevent event bubbling
@@ -167,25 +205,7 @@ export const Man = (props) => {
           const material = object.material;
           setMaterial(material);
           setColor(rgbToHex(material.color));
-          if (material.name === "Hair" || material.name === "Skin")
-            setMeshName(material.name);
-          else {
-            let name = "";
-            const splitParent = parentGroup.name.split("_");
-            let parentName = splitParent[splitParent.length - 1];
-            if (parentName === "CharacterArmature") parentName = "";
-            if (object.name.includes("_")) {
-              const split = object.name.split("_");
-              name = parentName + split[split.length - 1];
-            } else {
-              name = parentName + "0";
-            }
-            setMeshName(name);
-          }
-          // parentGroup.children.forEach(element => {
-          //   console.log(element.material.name)
-          // });
-
+          setMeshName(material.name);
           break;
         }
       }
@@ -206,9 +226,7 @@ export const Man = (props) => {
         });
         saveAs(blob, "model.gltf");
       },
-      (error) => {
-
-      }, 
+      (error) => {},
       {
         trs: true,
       }
@@ -710,12 +728,14 @@ export const Man = (props) => {
                 skeleton={nodes.Cube022_2.skeleton}
               />
             </group>
-            <skinnedMesh
-              name="Casual2_Legs"
-              geometry={nodes.Casual2_Legs.geometry}
-              material={myMaterials.LEGS1}
-              skeleton={nodes.Casual2_Legs.skeleton}
-            />
+            <group name="Casual2_Legs">
+              <skinnedMesh
+                name="Casual2_Legs"
+                geometry={nodes.Casual2_Legs.geometry}
+                material={myMaterials.LEGS1}
+                skeleton={nodes.Casual2_Legs.skeleton}
+              />
+            </group>
             <group name="Casual_Legs">
               <skinnedMesh
                 name="Legs"
@@ -730,12 +750,14 @@ export const Man = (props) => {
                 skeleton={nodes.Cube005_1.skeleton}
               />
             </group>
-            <skinnedMesh
-              name="Farmer_Pants"
-              geometry={nodes.Farmer_Pants.geometry}
-              material={myMaterials.LEGS1}
-              skeleton={nodes.Farmer_Pants.skeleton}
-            />
+            <group name="Farmer_Pants">
+              <skinnedMesh
+                name="Farmer_Pants"
+                geometry={nodes.Farmer_Pants.geometry}
+                material={myMaterials.LEGS1}
+                skeleton={nodes.Farmer_Pants.skeleton}
+              />
+            </group>
             <group name="King_Legs">
               <skinnedMesh
                 name="Legs1"
@@ -770,12 +792,14 @@ export const Man = (props) => {
                 skeleton={nodes.Cube009_1.skeleton}
               />
             </group>
-            <skinnedMesh
-              name="Suit_Legs"
-              geometry={nodes.Suit_Legs.geometry}
-              material={myMaterials.LEGS1}
-              skeleton={nodes.Suit_Legs.skeleton}
-            />
+            <group name="Suit_Legs">
+              <skinnedMesh
+                name="Suit_Legs"
+                geometry={nodes.Suit_Legs.geometry}
+                material={myMaterials.LEGS1}
+                skeleton={nodes.Suit_Legs.skeleton}
+              />
+            </group>
             <group name="Worker_Legs">
               <skinnedMesh
                 name="Legs1"
@@ -864,12 +888,14 @@ export const Man = (props) => {
                 skeleton={nodes.Cube035_1.skeleton}
               />
             </group>
-            <skinnedMesh
-              name="King_Feet"
-              geometry={nodes.King_Feet.geometry}
-              material={myMaterials.FEET1}
-              skeleton={nodes.King_Feet.skeleton}
-            />
+            <group name="King_Feet">
+              <skinnedMesh
+                name="King_Feet"
+                geometry={nodes.King_Feet.geometry}
+                material={myMaterials.FEET1}
+                skeleton={nodes.King_Feet.skeleton}
+              />
+            </group>
             <group name="Punk_Feet">
               <skinnedMesh
                 name="Feet"
@@ -884,12 +910,14 @@ export const Man = (props) => {
                 skeleton={nodes.Cube208_1.skeleton}
               />
             </group>
-            <skinnedMesh
-              name="Suit_Feet"
-              geometry={nodes.Suit_Feet.geometry}
-              material={myMaterials.FEET1}
-              skeleton={nodes.Suit_Feet.skeleton}
-            />
+            <group name="Suit_Feet">
+              <skinnedMesh
+                name="Suit_Feet"
+                geometry={nodes.Suit_Feet.geometry}
+                material={myMaterials.FEET1}
+                skeleton={nodes.Suit_Feet.skeleton}
+              />
+            </group>
           </group>
         </group>
       </group>
@@ -903,7 +931,7 @@ function ExportButton() {
   const { setSave } = useCustomization();
   const handleClick = () => {
     console.log("Exporting");
-    setSave(true)
+    setSave(true);
   };
 
   return (

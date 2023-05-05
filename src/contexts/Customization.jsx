@@ -16,7 +16,10 @@ export const CustomizationProvider = (props) => {
   const [material, setMaterial] = useState(null);
   const [meshName, setMeshName] = useState("");
   const [save, setSave] = useState(false);
-
+  const [headMaterials, setHeadMaterials] = useState([]);
+  const [bodyMaterials, setBodyMaterials] = useState([]);
+  const [legsMaterials, setLegsMaterials] = useState([]);
+  const [feetMaterials, setFeetMaterials] = useState([]);
   return (
     <CustomizationContext.Provider
       value={{
@@ -48,6 +51,14 @@ export const CustomizationProvider = (props) => {
         setMeshName,
         save,
         setSave,
+        headMaterials,
+        setHeadMaterials,
+        bodyMaterials,
+        setBodyMaterials,
+        legsMaterials,
+        setLegsMaterials,
+        feetMaterials,
+        setFeetMaterials,
       }}
     >
       {props.children}

@@ -17,21 +17,23 @@ function App() {
   });
 
   const handleColorChange = (color) => {
-    setColor(color)
-    material.color.set(color)
-  }
+    setColor(color);
+    material.color.set(color);
+  };
 
   function Picker() {
     const snap = useSnapshot(state);
     return (
-      <div className="picker">
-        <HexColorPicker
-          color={snap.items[snap.current]}
-          onChange={(color) => (state.items[snap.current] = color)}
-          onMouseUp={() => handleColorChange(state.items[snap.current])}
-        />
-        <h3>{color}</h3>        
-        <h1>{meshName}</h1>
+      <div style={{ display: material ? "block" : "none" }}>
+        <div className="picker">
+          <HexColorPicker
+            color={snap.items[snap.current]}
+            onChange={(color) => (state.items[snap.current] = color)}
+            onMouseUp={() => handleColorChange(state.items[snap.current])}
+          />
+          <h3>{color}</h3>
+          <h1>{meshName}</h1>
+        </div>
       </div>
     );
   }
@@ -57,7 +59,7 @@ function App() {
       </Canvas>
       <Picker />
       <Configurator />
-      <ExportButton/>
+      <ExportButton />
     </div>
   );
 }
